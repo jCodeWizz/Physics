@@ -1,31 +1,32 @@
 package dev.codewizz;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Main extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
+	
+	private SpriteBatch batch;
+	private Ball ball;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+		ball = new Ball(0, 0);
 	}
 
 	@Override
 	public void render () {
-		ScreenUtils.clear(1, 0, 0, 1);
+		ScreenUtils.clear(0.2f, 0.2f, 0.2f, 1);
 		batch.begin();
-		batch.draw(img, 0, 0);
+		ball.update(Gdx.graphics.getDeltaTime());
+		ball.render(batch);
 		batch.end();
 	}
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
 	}
 }
