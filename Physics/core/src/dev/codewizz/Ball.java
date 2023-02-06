@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -12,14 +13,22 @@ import com.badlogic.gdx.math.Vector2;
 public class Ball {
 
 	private final float MASS = 20f;
+	private final float FwC = 0.01f;
+	private final float DRAGC = 5f;
+	private final float BOUNCEC = 500f;
 	private static final Texture TEXTURE = new Texture(Gdx.files.internal("ball.png"));
-
+	private static final BitmapFont font = new BitmapFont();
+	
+	
 	public boolean grounded = false;
 	
 	private Vector2 pos;
 	private Vector2 speed;
 	private Vector2 acc;
 	private Vector2 size;
+	
+	private Vector2 mousePos1;
+	private Vector2 mousePos2;
 	
 	private Sprite sprite;
 
@@ -39,20 +48,36 @@ public class Ball {
 	}
 
 	public void update(float dt, ArrayList<Solid> solids) {
-		sprite.rotate(0.2f);
+
+		if(Gdx.input.isButtonPressed(0) && mousePos1 == null) {
+			mousePos1 = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+		}
+		if(!Gdx.input.isButtonPressed(0) && mousePos2 == null && mousePos1 != null) {
+			mousePos2 = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+			Vector2 delta = mousePos2.sub(mousePos1);
+			delta.scl(MASS * DRAGC);
+			delta.x *= -1;
+			forces.add(delta);
+			
+			
+			mousePos1 = null;
+			mousePos2 = null;
+		}
+		
+		
+		
 		
 		Vector2 totalForce = new Vector2();
 
 		forces.add(new Vector2(0, MASS * -9.81f));
+		if(grounded)
+			forces.add(new Vector2(0, MASS * 9.81f));
+		
+		forces.add(new Vector2(-0.5f * FwC * speed.x * 32f * 32f * (float)Math.PI * 1.2f, -0.5f * FwC * speed.y * 32f * 32f * (float)Math.PI * 1.2f));
 		
 		if(grounded) {
 			// APLY FRICTION
 			forces.add(new Vector2(0, 0));
-		}
-
-		if (Gdx.input.isButtonPressed(0)) {
-			System.out.println("APLLYING");
-			forces.add(new Vector2(MASS * 5f, 0));
 		}
 
 		for (Vector2 force : forces) {
@@ -71,7 +96,6 @@ public class Ball {
 
 		}
 		
-		System.out.println(grounded);
 	}
 
 	/*
@@ -118,9 +142,9 @@ public class Ball {
 
 	public void applyBounceForce(boolean vertical) {
 		if (vertical) {
-			speed.y *= -0.6f;
+			forces.add(new Vector2(0, BOUNCEC * 4f * -speed.y));
 		} else {
-			speed.x *= -0.6f;
+			forces.add(new Vector2(BOUNCEC * 4f * -speed.x, 0));
 		}
 	}
 
@@ -139,5 +163,9 @@ public class Ball {
 	public void render(SpriteBatch b) {
 		sprite.setPosition(pos.x, pos.y);
 		sprite.draw(b);
+		
+		font.draw(b, "POSITION: { " + (int)pos.x + " , " + (int)pos.y + " }", 10, Gdx.graphics.getHeight() - 50);
+		font.draw(b, "SPEED: { " + (int)speed.x + " , " + (int)speed.y + " }", 10, Gdx.graphics.getHeight() - 75);
+		font.draw(b, "ACCELARATION: { " + (int)acc.x + " , " + (int)acc.y + " }", 10, Gdx.graphics.getHeight() - 100);
 	}
 }
