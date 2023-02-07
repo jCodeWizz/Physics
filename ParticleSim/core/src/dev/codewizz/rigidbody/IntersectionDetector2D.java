@@ -2,6 +2,8 @@ package dev.codewizz.rigidbody;
 
 import com.badlogic.gdx.math.Vector2;
 
+import dev.codewizz.primitives.AABB;
+import dev.codewizz.primitives.Box2D;
 import dev.codewizz.primitives.Circle;
 import dev.codewizz.primitives.Line2D;
 
@@ -23,6 +25,17 @@ public class IntersectionDetector2D {
 		Vector2 centerToPoint = new Vector2(point).sub(circleCenter);
 		
 		return centerToPoint.len2() <= c.getRadius() * c.getRadius();
+	}
+	
+	public static boolean pointInAABB(Vector2 point, AABB box) {
+		Vector2 min = box.getMin();
+		Vector2 max = box.getMax();
+		
+		return point.x <= max.x && min.x <= point.x && point.y <= max.y && min.y <= point.y;
+	}
+	
+	public static boolean pointInBox2D(Vector2 point, Box2D box) {
+		return false;
 	}
 	
 }
