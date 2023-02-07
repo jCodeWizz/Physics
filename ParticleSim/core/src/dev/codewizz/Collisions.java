@@ -12,7 +12,7 @@ public class Collisions {
 		
 		
 		Vector2 distance = new Vector2(new Vector2(b.pos).sub(a.pos));
-		if(distance.len() - (sumRadii * sumRadii) > 0) {
+		if(distance.len2() - (sumRadii * sumRadii) > 0) {
 			return result;
 		}
 		
