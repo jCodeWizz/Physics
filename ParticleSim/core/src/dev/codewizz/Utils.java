@@ -2,13 +2,13 @@ package dev.codewizz;
 
 public class Utils {
 	
-	public static float a(float a, float max, float min) {
-		if(a > max)
+	public static float a(float value, float max, float min) {
+		if(value >= max)
 			return max;
-		if(a < min) {
+		if(value <= min) {
 			return min;
 		} else {
-			return min;
+			return value;
 		}
 	}
 }
