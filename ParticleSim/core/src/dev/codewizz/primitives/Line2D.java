@@ -20,6 +20,10 @@ public class Line2D {
         this.color = color;
         this.lifetime = lifetime;
     }
+    
+    public float lengthSquared() {
+    	return new Vector2(to).sub(from).len2();
+    }
 
     public int beginFrame() {
         this.lifetime--;

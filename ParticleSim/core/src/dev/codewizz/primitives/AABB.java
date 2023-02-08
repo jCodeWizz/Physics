@@ -18,6 +18,8 @@ public class AABB {
 	public AABB(Vector2 min, Vector2 max) {
 		this.size = new Vector2(max).sub(min);
 		this.halfSize = new Vector2(size).scl(0.5f);
+		this.rigidbody = new Rigidbody2D();
+		this.rigidbody.setPosition(new Vector2(min).add(halfSize));
 	}
 	
 	public Vector2 getMin() {

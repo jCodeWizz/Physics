@@ -6,17 +6,21 @@ import java.util.List;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+
+import dev.codewizz.primitives.AABB;
+import dev.codewizz.primitives.Line2D;
+import dev.codewizz.rigidbody.IntersectionDetector2D;
+import dev.codewizz.rigidbody.Rigidbody2D;
 
 public class Main extends ApplicationAdapter {
 	
-	private ArrayList<Hydrogen> particles = new ArrayList<>();
-	private ArrayList<Solid> solids = new ArrayList<>();
 	private SpriteBatch batch;
 	
 	private List<CollisionManifold> collisions;
-	private List<Hydrogen> bodies1;
-	private List<Hydrogen> bodies2;
+	private List<Rigidbody2D> bodies1;
+	private List<Rigidbody2D> bodies2;
 	
 	
 	@Override
@@ -27,13 +31,13 @@ public class Main extends ApplicationAdapter {
 		bodies1 = new ArrayList<>();
 		bodies2 = new ArrayList<>();
 		
-		particles.add(new Hydrogen(500, 600));
-		particles.add(new Hydrogen(500, 300));
 		
-		solids.add(new Solid(0, 0, Gdx.graphics.getWidth(), 50));
-		solids.add(new Solid(0, Gdx.graphics.getHeight() - 50, Gdx.graphics.getWidth(), 50));
-		solids.add(new Solid(0, 0, 50, Gdx.graphics.getHeight()));
-		solids.add(new Solid(Gdx.graphics.getWidth() - 50, 0, 50, Gdx.graphics.getHeight()));
+		AABB aabb = new AABB(new Vector2(-10, -10), new Vector2(10, 10));
+		Line2D line = new Line2D(new Vector2(-20, -20), new Vector2(20, 20));
+		
+		System.out.println(IntersectionDetector2D.lineAndAABB(line, aabb));
+		
+		
 	}
 	
 	public void update(float dt) {
@@ -41,32 +45,6 @@ public class Main extends ApplicationAdapter {
 		bodies2.clear();
 		collisions.clear();
 		
-		int size = particles.size();
-		for(int i = 0; i < size; i++) {
-			for(int j = i; j < size; j++) {
-				if(i == j) continue;
-				
-				CollisionManifold result = new CollisionManifold();
-				Hydrogen r1 = particles.get(i);
-				Hydrogen r2 = particles.get(j);
-				
-				result = Collisions.findCollisionFeatures(r1, r2);
-				
-				if(result != null && result.isColliding()) {
-					bodies1.add(r1);
-					bodies2.add(r2);
-					collisions.add(result);
-				}
-			}
-		}
-		
-		
-		
-		
-		
-		for(Hydrogen p : particles) {
-			p.update(dt, solids, particles);
-		}
 	}
 
 	@Override
@@ -76,12 +54,6 @@ public class Main extends ApplicationAdapter {
 		update(Gdx.graphics.getDeltaTime());
 		
 		batch.begin();
-		for(Solid s : solids) {
-			s.render(batch);
-		}
-		for(Hydrogen h : particles) {
-			h.render(batch);
-		}
 		batch.end();
 	}
 	
