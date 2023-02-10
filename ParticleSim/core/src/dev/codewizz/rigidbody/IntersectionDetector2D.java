@@ -333,6 +333,26 @@ public class IntersectionDetector2D {
 		return true;
 	}
 	
+	public static boolean AABBAndBox2D(Box2D b1, Box2D b2) {
+		Vector2[] axesToTest = { 
+				new Vector2(0, 1), new Vector2(1, 0),
+				new Vector2(0, 1), new Vector2(1, 0)		
+		};
+		
+		JMath.rotate(axesToTest[0], b1.getRigidbody().getRotation(), new Vector2(0, 0));
+		JMath.rotate(axesToTest[1], b1.getRigidbody().getRotation(), new Vector2(0, 0));
+		JMath.rotate(axesToTest[2], b2.getRigidbody().getRotation(), new Vector2(0, 0));
+		JMath.rotate(axesToTest[3], b2.getRigidbody().getRotation(), new Vector2(0, 0));
+		
+		for(int i = 0; i < axesToTest.length; i++) {
+			if(!overlapOnAxis(b1, b2, axesToTest[1])) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	private static boolean overlapOnAxis(AABB b1, AABB b2, Vector2 axis) {
 		Vector2 interval1 = getInterval(b1, axis);
 		Vector2 interval2 = getInterval(b2, axis);

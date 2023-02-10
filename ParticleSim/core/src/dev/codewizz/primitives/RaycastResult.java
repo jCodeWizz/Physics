@@ -23,6 +23,14 @@ public class RaycastResult {
 		this.hit = hit;
 	}
 	
+	public float getT() {
+		return t;
+	}
+	
+	public boolean isHit() {
+		return hit;
+	}
+	
 	public static void reset(RaycastResult result) {
 		if(result != null) {
 			result.point = new Vector2();

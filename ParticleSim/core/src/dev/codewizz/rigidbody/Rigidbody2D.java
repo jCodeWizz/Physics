@@ -19,4 +19,7 @@ public class Rigidbody2D {
 	public void setRotation(float rotation) {
 		this.rotation = rotation;
 	}
+	public void rotate(float rotation) {
+		this.rotation+=rotation;
+	}
 }

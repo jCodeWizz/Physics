@@ -1,19 +1,48 @@
 package dev.codewizz.primitives;
 
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-import dev.codewizz.rigidbody.Rigidbody2D;
+import dev.codewizz.Main;
 
-public class Circle {
+public class Circle extends Shape {
 
 	private float radius = 1.0f;
-	private Rigidbody2D body = null;
+	private boolean fill = false;
 	
 	public Circle(float x, float y, float r) {
-		this.body = new Rigidbody2D();
-		this.body.setPosition(new Vector2(x, y));
+		this.rigidbody.setPosition(new Vector2(x, y));
 		this.radius = r;
+	}
+	
+	public Circle(float x, float y, float r, boolean fill) {
+		this.rigidbody.setPosition(new Vector2(x, y));
+		this.radius = r;
+		this.fill = fill;
+	}
+	
+	public Circle(float x, float y, float r, Color color) {
+		this.rigidbody.setPosition(new Vector2(x, y));
+		this.radius = r;
+		this.color = color;
+	}
+	
+	public Circle(float x, float y, float r, Color color, boolean fill) {
+		this.rigidbody.setPosition(new Vector2(x, y));
+		this.radius = r;
+		this.fill = fill;
+		this.color = color;
+	}
+	
+	@Override
+	public void render(SpriteBatch b) {
+		if(fill) {
+			Main.drawer.filledCircle(this.rigidbody.getPosition().x, this.rigidbody.getPosition().y, radius, color);
+		} else {
+			Main.drawer.circle(this.rigidbody.getPosition().x, this.rigidbody.getPosition().y, radius);
+		}
 	}
 	
 	public float getRadius() {
@@ -21,6 +50,6 @@ public class Circle {
 	}
 	
 	public Vector2 getCenter() {
-		return body.getPosition();
+		return rigidbody.getPosition();
 	}
 }

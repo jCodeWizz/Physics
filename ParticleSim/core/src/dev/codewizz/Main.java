@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -12,8 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import dev.codewizz.primitives.AABB;
-import dev.codewizz.primitives.Line2D;
-import dev.codewizz.rigidbody.IntersectionDetector2D;
+import dev.codewizz.primitives.Shape;
 import dev.codewizz.rigidbody.Rigidbody2D;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -27,6 +27,7 @@ public class Main extends ApplicationAdapter {
 	private List<CollisionManifold> collisions;
 	private List<Rigidbody2D> bodies1;
 	private List<Rigidbody2D> bodies2;
+	private List<Shape> shapes;
 	
 	
 	@Override
@@ -38,13 +39,22 @@ public class Main extends ApplicationAdapter {
 		collisions = new ArrayList<>();
 		bodies1 = new ArrayList<>();
 		bodies2 = new ArrayList<>();
+		shapes = new ArrayList<>();
+		
+		addShapes();
+	}
+	
+	public void addShapes() {
+		shapes.add(new AABB(new Vector2(1, 0), new Vector2(Gdx.graphics.getWidth(), 30), Color.GOLDENROD, true));
 		
 		
-		AABB aabb = new AABB(new Vector2(-10, -10), new Vector2(10, 10));
-		Line2D line = new Line2D(new Vector2(-20, -20), new Vector2(20, 20));
+		shapes.add(new AABB(new Vector2(1, 0), new Vector2(30, Gdx.graphics.getHeight()), Color.GOLDENROD, true));
 		
-		System.out.println(IntersectionDetector2D.lineAndAABB(line, aabb));
 		
+		shapes.add(new AABB(new Vector2(1, Gdx.graphics.getHeight()-30), new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), Color.GOLDENROD, true));
+		
+		
+		shapes.add(new AABB(new Vector2(Gdx.graphics.getWidth(), 0), new Vector2(Gdx.graphics.getWidth()-30, Gdx.graphics.getHeight()), Color.GOLDENROD, true));
 		
 	}
 	
@@ -62,7 +72,9 @@ public class Main extends ApplicationAdapter {
 		update(Gdx.graphics.getDeltaTime());
 		
 		batch.begin();
-		drawer.circle(100, 100, 20);
+		for(Shape shape : shapes) {
+			shape.render(batch);
+		}
 		batch.end();
 	}
 	
