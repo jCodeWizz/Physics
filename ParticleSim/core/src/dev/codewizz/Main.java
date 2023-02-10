@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -13,8 +15,12 @@ import dev.codewizz.primitives.AABB;
 import dev.codewizz.primitives.Line2D;
 import dev.codewizz.rigidbody.IntersectionDetector2D;
 import dev.codewizz.rigidbody.Rigidbody2D;
+import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class Main extends ApplicationAdapter {
+	
+	private static TextureRegion WHITE_TEX;
+	public static ShapeDrawer drawer;
 	
 	private SpriteBatch batch;
 	
@@ -26,6 +32,8 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
+		WHITE_TEX = new TextureRegion(new Texture("white.png"));
+		drawer = new ShapeDrawer(batch, WHITE_TEX);
 		
 		collisions = new ArrayList<>();
 		bodies1 = new ArrayList<>();
@@ -54,6 +62,7 @@ public class Main extends ApplicationAdapter {
 		update(Gdx.graphics.getDeltaTime());
 		
 		batch.begin();
+		drawer.circle(100, 100, 20);
 		batch.end();
 	}
 	

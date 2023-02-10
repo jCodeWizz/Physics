@@ -1,5 +1,6 @@
 package dev.codewizz.primitives;
 
+
 import com.badlogic.gdx.math.Vector2;
 
 import dev.codewizz.rigidbody.Rigidbody2D;

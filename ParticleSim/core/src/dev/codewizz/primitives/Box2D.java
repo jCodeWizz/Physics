@@ -1,5 +1,6 @@
 package dev.codewizz.primitives;
 
+
 import com.badlogic.gdx.math.Vector2;
 
 import dev.codewizz.rigidbody.Rigidbody2D;
@@ -25,6 +26,10 @@ public class Box2D {
 	
 	public Vector2 getMax() {
 		return new Vector2(this.rigidbody.getPosition()).add(this.halfSize);
+	}
+	
+	public Vector2 getHalfSize() {
+		return this.halfSize;
 	}
 	
 	public Vector2[] getVertices() {
