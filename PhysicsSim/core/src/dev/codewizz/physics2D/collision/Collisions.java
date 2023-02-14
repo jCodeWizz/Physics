@@ -4,6 +4,24 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Collisions {
 
+	public static CollisionResult testCollision(Collider a, Collider b) {
+		if(a instanceof BoxCollider) {
+			if(b instanceof BoxCollider) {
+				return polygonAndPolygon((BoxCollider) a, (BoxCollider) b);
+			} else {
+				return circleAndPolygon((CircleCollider) b, (BoxCollider) a);
+			}
+		} else {
+			if(b instanceof BoxCollider) {
+				return circleAndPolygon((CircleCollider) a, (BoxCollider)b);
+			} else {
+				return circleAndCircle((CircleCollider) a, (CircleCollider)b);
+			}
+		}
+	}
+	
+	
+	
 	public static CollisionResult circleAndPolygon(CircleCollider circle, BoxCollider box) {
 		Vector2[] vertices = box.getTransformedVertices();
 		
