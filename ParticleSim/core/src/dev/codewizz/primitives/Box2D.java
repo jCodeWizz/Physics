@@ -24,13 +24,13 @@ public class Box2D extends Shape {
 	public Box2D(Vector2 min, Vector2 max) {
 		this.size = new Vector2(max).sub(min);
 		this.halfSize = new Vector2(size).scl(0.5f);
-		this.rigidbody.setPosition(new Vector2(min).add(halfSize));
+		this.rigidbody.setTransform(new Vector2(min).add(halfSize));
 	}
 	
 	public Box2D(Vector2 min, Vector2 max, Color color) {
 		this.size = new Vector2(max).sub(min);
 		this.halfSize = new Vector2(size).scl(0.5f);
-		this.rigidbody.setPosition(new Vector2(min).add(halfSize));
+		this.rigidbody.setTransform(new Vector2(min).add(halfSize));
 		this.color = color;
 	}
 	
@@ -38,14 +38,14 @@ public class Box2D extends Shape {
 		this.fill = fill;
 		this.size = new Vector2(max).sub(min);
 		this.halfSize = new Vector2(size).scl(0.5f);
-		this.rigidbody.setPosition(new Vector2(min).add(halfSize));
+		this.rigidbody.setTransform(new Vector2(min).add(halfSize));
 	}
 	
 	public Box2D(Vector2 min, Vector2 max, Color color, boolean fill) {
 		this.fill = fill;
 		this.size = new Vector2(max).sub(min);
 		this.halfSize = new Vector2(size).scl(0.5f);
-		this.rigidbody.setPosition(new Vector2(min).add(halfSize));
+		this.rigidbody.setTransform(new Vector2(min).add(halfSize));
 		this.color = color;
 	}
 	
@@ -73,11 +73,11 @@ public class Box2D extends Shape {
 	}
 	
 	
-	public Vector2 getMin() {
+	public Vector2 getLocalMin() {
 		return new Vector2(this.rigidbody.getPosition()).sub(this.halfSize);
 	}
 	
-	public Vector2 getMax() {
+	public Vector2 getLocalMax() {
 		return new Vector2(this.rigidbody.getPosition()).add(this.halfSize);
 	}
 	
@@ -86,8 +86,8 @@ public class Box2D extends Shape {
 	}
 	
 	public Vector2[] getVertices() {
-		Vector2 min = getMin();
-		Vector2 max = getMax();
+		Vector2 min = getLocalMin();
+		Vector2 max = getLocalMax();
 		
 		Vector2[] vertices = {
 			new Vector2(min.x, min.y), new Vector2(min.x, max.y),

@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import dev.codewizz.rigidbody.Rigidbody2D;
 
-public abstract class Shape {
+public abstract class Shape implements Comparable<Shape> {
 	
 	protected Rigidbody2D rigidbody;
 	protected boolean fill = false;
@@ -21,4 +21,14 @@ public abstract class Shape {
 	public Rigidbody2D getRigidbody() {
 		return this.rigidbody;
 	}
+	
+	@Override
+	public int compareTo(Shape o) {
+		if(this.getRigidbody().hasInfiniteMass())
+			return 1;
+		else
+			return -1;
+	}
+	
+	
 }

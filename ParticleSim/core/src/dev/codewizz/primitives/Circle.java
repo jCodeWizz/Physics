@@ -13,24 +13,24 @@ public class Circle extends Shape {
 	private boolean fill = false;
 	
 	public Circle(float x, float y, float r) {
-		this.rigidbody.setPosition(new Vector2(x, y));
+		this.rigidbody.setTransform(new Vector2(x, y));
 		this.radius = r;
 	}
 	
 	public Circle(float x, float y, float r, boolean fill) {
-		this.rigidbody.setPosition(new Vector2(x, y));
+		this.rigidbody.setTransform(new Vector2(x, y));
 		this.radius = r;
 		this.fill = fill;
 	}
 	
 	public Circle(float x, float y, float r, Color color) {
-		this.rigidbody.setPosition(new Vector2(x, y));
+		this.rigidbody.setTransform(new Vector2(x, y));
 		this.radius = r;
 		this.color = color;
 	}
 	
 	public Circle(float x, float y, float r, Color color, boolean fill) {
-		this.rigidbody.setPosition(new Vector2(x, y));
+		this.rigidbody.setTransform(new Vector2(x, y));
 		this.radius = r;
 		this.fill = fill;
 		this.color = color;
@@ -43,6 +43,10 @@ public class Circle extends Shape {
 		} else {
 			Main.drawer.circle(this.rigidbody.getPosition().x, this.rigidbody.getPosition().y, radius);
 		}
+	}
+	
+	public void setRadius(float r) {
+		this.radius = r;
 	}
 	
 	public float getRadius() {

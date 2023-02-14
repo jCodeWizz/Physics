@@ -20,20 +20,20 @@ public class AABB extends Shape {
 	public AABB(Vector2 min, Vector2 max) {
 		this.size = new Vector2(max).sub(min);
 		this.halfSize = new Vector2(size).scl(0.5f);
-		this.rigidbody.setPosition(new Vector2(min).add(halfSize));
+		this.rigidbody.setTransform(new Vector2(min).add(halfSize));
 	}
 	
 	public AABB(Vector2 min, Vector2 max, Color color) {
 		this.size = new Vector2(max).sub(min);
 		this.halfSize = new Vector2(size).scl(0.5f);
-		this.rigidbody.setPosition(new Vector2(min).add(halfSize));
+		this.rigidbody.setTransform(new Vector2(min).add(halfSize));
 		this.color = color;
 	}
 	
 	public AABB(Vector2 min, Vector2 max, Color color, boolean fill) {
 		this.size = new Vector2(max).sub(min);
 		this.halfSize = new Vector2(size).scl(0.5f);
-		this.rigidbody.setPosition(new Vector2(min).add(halfSize));
+		this.rigidbody.setTransform(new Vector2(min).add(halfSize));
 		this.color = color;
 		this.fill = fill;
 	}
@@ -42,7 +42,7 @@ public class AABB extends Shape {
 		this.fill = fill;
 		this.size = new Vector2(max).sub(min);
 		this.halfSize = new Vector2(size).scl(0.5f);
-		this.rigidbody.setPosition(new Vector2(min).add(halfSize));
+		this.rigidbody.setTransform(new Vector2(min).add(halfSize));
 	}
 	
 	@Override

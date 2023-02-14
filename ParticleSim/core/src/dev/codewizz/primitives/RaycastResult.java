@@ -31,6 +31,14 @@ public class RaycastResult {
 		return hit;
 	}
 	
+	public Vector2 getPoint() {
+		return this.point;
+	}
+	
+	public Vector2 getNormal() {
+		return this.normal;
+	}
+	
 	public static void reset(RaycastResult result) {
 		if(result != null) {
 			result.point = new Vector2();
