@@ -25,7 +25,8 @@ public class Rigidbody {
 	private ShapeType shapeType;
 	public boolean transformRequired;
 	
-	private Rigidbody(Vector2 position, float density, float mass, float restitution, float area, boolean isStatic, ShapeType shapeType) {
+	private Rigidbody(GameObject object, Vector2 position, float density, float mass, float restitution, float area, boolean isStatic, ShapeType shapeType) {
+		this.object = object;
 		this.position = position;
 		this.linearVelocity = new Vector2();
 		
@@ -64,7 +65,7 @@ public class Rigidbody {
 		this.transformRequired = true;
 	}
 	
-	public static Rigidbody createCircle(Vector2 position, float radius, float density, boolean isStatic, float restitution) {
+	public static Rigidbody createCircle(GameObject object, Vector2 position, float radius, float density, boolean isStatic, float restitution) {
 		Rigidbody body = null;
 		
 		if(radius <= 0) { Debug.error("RADIUS {" + radius + "} IS NEGATIVE"); return null; }
@@ -80,11 +81,11 @@ public class Rigidbody {
 		// mass = area * depth * density
 		float mass = area * density;
 		
-		body = new Rigidbody(position, density, mass, restitution, area, isStatic, ShapeType.Circle);
+		body = new Rigidbody(object, position, density, mass, restitution, area, isStatic, ShapeType.Circle);
 		return body;
 	}
 	
-	public static Rigidbody createBox(Vector2 position, float w, float h, float density, boolean isStatic, float restitution) {
+	public static Rigidbody createBox(GameObject object, Vector2 position, float w, float h, float density, boolean isStatic, float restitution) {
 		Rigidbody body = null;
 		
 		
@@ -97,7 +98,7 @@ public class Rigidbody {
 		// mass = area * depth * density
 		float mass = area * density;
 		
-		body = new Rigidbody(position, density, mass, restitution, area, isStatic, ShapeType.Box);
+		body = new Rigidbody(object, position, density, mass, restitution, area, isStatic, ShapeType.Box);
 		return body;
 	}
 	

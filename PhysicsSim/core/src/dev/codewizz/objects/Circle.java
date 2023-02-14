@@ -20,7 +20,7 @@ public class Circle extends GameObject {
 		this.color = Color.WHITE;
 		
 		this.collider = new CircleCollider(this, radius);
-		this.rigidbody = Rigidbody.createCircle(new Vector2(x, y), radius, 0.2f, false, 0.2f);
+		this.rigidbody = Rigidbody.createCircle(this, new Vector2(x, y), radius, 0.2f, false, 0.2f);
 		
 	}
 	

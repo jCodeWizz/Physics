@@ -21,7 +21,7 @@ public class Box extends GameObject {
 		this.color = Color.WHITE;
 		
 		this.collider = new BoxCollider(this, w, h);
-		this.rigidbody = Rigidbody.createBox(new Vector2(x, y), w, h, 0.2f, false, 0.2f);
+		this.rigidbody = Rigidbody.createBox(this, new Vector2(x, y), w, h, 0.2f, false, 0.2f);
 	}
 	
 	public Box(float x, float y, float w, float h, Color color) {
@@ -36,6 +36,7 @@ public class Box extends GameObject {
 
 	@Override
 	public void render(SpriteBatch b) {
-		Main.shapeDrawer.filledRectangle(rigidbody.getPosition().x, rigidbody.getPosition().y, w, h, color);
+		Vector2 pos = ((BoxCollider) collider).getTransformedVertices()[0];
+		Main.shapeDrawer.filledRectangle(pos.x, pos.y, w, h, color);
 	}
 }

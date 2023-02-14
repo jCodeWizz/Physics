@@ -1,6 +1,7 @@
 package dev.codewizz.objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
 import dev.codewizz.physics2D.Rigidbody;
 import dev.codewizz.physics2D.collision.Collider;
@@ -22,6 +23,10 @@ public abstract class GameObject {
 	
 	public Collider getCollider() {
 		return this.collider;
+	}
+	
+	public void move(Vector2 a) {
+		this.rigidbody.move(a);
 	}
 	
 }
