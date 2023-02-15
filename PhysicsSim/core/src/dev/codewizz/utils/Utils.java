@@ -17,10 +17,25 @@ public class Utils {
 		return new Color(r, g, b, 1f);
 	}
 	
-	public static Vector2 transform(Vector2 v, Transform transform) {
-		return new Vector2(
-				transform.cos * v.x - transform.sin * v.y + transform.x, 
-				transform.sin * v.x - transform.cos * v.y + transform.y
-		);
+	public static Vector2 rotate(Vector2 v, float angleRadian, Vector2 origin) {
+		Vector2 vec = new Vector2(v);
+		
+		
+		float x = vec.x - origin.x;
+		float y = vec.y - origin.y;
+		
+		float cos = (float)Math.cos(angleRadian);
+		float sin = (float)Math.sin(angleRadian);
+		
+		float xPrime = (x * cos) - (y * sin);
+		float yPrime = (x * sin) + (y * cos);
+		
+		xPrime += origin.x;
+		yPrime += origin.y;
+		
+		vec.x = xPrime;
+		vec.y = yPrime;
+		
+		return vec;
 	}
 }

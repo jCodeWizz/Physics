@@ -12,6 +12,7 @@ public class Rigidbody {
 	
 	private Vector2 position;
 	private Vector2 linearVelocity;
+	private Vector2 force;
 
 	private float mass;
 	private float density;
@@ -21,6 +22,7 @@ public class Rigidbody {
 	private float area;
 	
 	private boolean isStatic;
+	private float invMass;
 
 	private ShapeType shapeType;
 	public boolean transformRequired;
@@ -29,6 +31,9 @@ public class Rigidbody {
 		this.object = object;
 		this.position = position;
 		this.linearVelocity = new Vector2();
+		this.force = new Vector2();
+		this.isStatic = isStatic;
+		
 		
 		this.rotation = 0f;
 		this.rotationalVelocity = 0f;
@@ -38,11 +43,34 @@ public class Rigidbody {
 		this.restitution = restitution;
 		this.area = area;
 		
-		this.isStatic = isStatic;
+		if(!this.isStatic) {
+			this.invMass = 1f / this.mass;
+		} else {
+			this.invMass = 0.0f;
+		}
+		
 		this.shapeType = shapeType;
 		
 		
 		this.transformRequired = true;
+	}
+	
+	public void update(float dt) {
+		
+		if(!isStatic) {
+			force.add(new Vector2(0, -98.1f * mass));
+		}
+		
+		
+		Vector2 acceleration = new Vector2(force).scl(1f/mass * dt);
+		this.linearVelocity.add(new Vector2(acceleration));
+		this.move(new Vector2(linearVelocity).scl(dt));
+		
+		this.rotation += this.rotationalVelocity * dt;
+		
+		this.force = new Vector2();
+		
+		
 	}
 	
 	public void move(Vector2 amount) {
@@ -55,13 +83,23 @@ public class Rigidbody {
 		this.transformRequired = true;
 	}
 	
+	public void addForce(Vector2 force) {
+		this.force.add(force);
+	}
+	
 	public void rotate(float amount) {
 		this.rotation += amount;
+		if(this.rotation > 360) {
+			this.rotation -= 360;
+		}
 		this.transformRequired = true;
 	}
 	
 	public void setRotation(float amount) {
 		this.rotation = amount;
+		if(this.rotation > 360) {
+			this.rotation -= 360;
+		}
 		this.transformRequired = true;
 	}
 	
@@ -80,7 +118,7 @@ public class Rigidbody {
 		
 		// mass = area * depth * density
 		float mass = area * density;
-		
+
 		body = new Rigidbody(object, position, density, mass, restitution, area, isStatic, ShapeType.Circle);
 		return body;
 	}
@@ -116,5 +154,49 @@ public class Rigidbody {
 	
 	public ShapeType getType() {
 		return this.shapeType;
+	}
+	
+	public float getMass() {
+		return this.mass;
+	}
+	
+	public Vector2 getLinearVelocity() {
+		return linearVelocity;
+	}
+
+	public Vector2 getForce() {
+		return force;
+	}
+
+	public float getDensity() {
+		return density;
+	}
+
+	public float getRestitution() {
+		return restitution;
+	}
+
+	public float getRotationalVelocity() {
+		return rotationalVelocity;
+	}
+
+	public float getArea() {
+		return area;
+	}
+
+	public boolean isStatic() {
+		return isStatic;
+	}
+
+	public ShapeType getShapeType() {
+		return shapeType;
+	}
+
+	public boolean isTransformRequired() {
+		return transformRequired;
+	}
+
+	public float getInvMass() {
+		return invMass;
 	}
 }

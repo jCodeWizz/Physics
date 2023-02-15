@@ -1,8 +1,5 @@
 package dev.codewizz;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -15,13 +12,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import dev.codewizz.objects.Box;
 import dev.codewizz.objects.Circle;
-import dev.codewizz.physics2D.Rigidbody;
-import dev.codewizz.physics2D.ShapeType;
 import dev.codewizz.physics2D.World;
-import dev.codewizz.physics2D.collision.BoxCollider;
-import dev.codewizz.physics2D.collision.CircleCollider;
-import dev.codewizz.physics2D.collision.CollisionResult;
-import dev.codewizz.physics2D.collision.Collisions;
+import dev.codewizz.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class Main extends ApplicationAdapter {
@@ -34,8 +26,6 @@ public class Main extends ApplicationAdapter {
 	
 	//private Color[] colors;
 
-	private List<Rigidbody> bodies = new ArrayList<>();
-	
 	@Override
 	public void create () {
 		world = new World();
@@ -44,23 +34,15 @@ public class Main extends ApplicationAdapter {
 		shapeDrawer = new ShapeDrawer(spriteBatch, WHITE);
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
-		camera = new OrthographicCamera(50, 50 * (h / w));
+		camera = new OrthographicCamera(1000, 1000 * (h / w));
 
 		camera.update();
 		
-		//colors = new Color[20];
+		world.addObject(new Box(0, -260, 1000f, 20f, Utils.getRandomColor()));
 		
-		//for(int i = 0; i < 20; i++) {
-		//	Vector2 pos = new Vector2(Utils.RANDOM.nextInt((int)camera.viewportWidth)  - (int)camera.viewportWidth/2, Utils.RANDOM.nextInt((int)camera.viewportHeight) - (int)camera.viewportHeight/2);
-		//	colors[i] = Utils.getRandomColor();
-		//
-		//	Rigidbody body = Rigidbody.createBox(pos, 1f, 1f, 2f, false, 0.4f);
-		//	bodies.add(body);
-		//}
-		
-		world.addObject(new Circle(5, 5, 2f));
-		world.addObject(new Box(12, 5, 4f, 4f));
-		world.addObject(new Circle(18, 5, 2f));
+		for(int i = 0; i < 50; i++) {
+			world.addObject(new Circle(Utils.RANDOM.nextInt(1000) - 500, Utils.RANDOM.nextInt(1000) - 500, Utils.RANDOM.nextInt(10) + 10f, Utils.getRandomColor()));
+		}
 	}
 	
 	
@@ -72,16 +54,16 @@ public class Main extends ApplicationAdapter {
 		spriteBatch.setProjectionMatrix(camera.combined);
 
 		if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-			world.getObject(0).move(new Vector2(-0.2f, 0));
+			world.getObject(0).addForce(new Vector2(-50f * world.getObject(0).getRigidbody().getMass(), 0));
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-			world.getObject(0).move(new Vector2(0.2f, 0));
+			world.getObject(0).addForce(new Vector2(50f * world.getObject(0).getRigidbody().getMass(), 0));
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-			world.getObject(0).move(new Vector2(0, 0.2f));
+			world.getObject(0).addForce(new Vector2(0, 50f * world.getObject(0).getRigidbody().getMass()));
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
-			world.getObject(0).move(new Vector2(0, -0.2f));
+			world.getObject(0).addForce(new Vector2(0, -50f * world.getObject(0).getRigidbody().getMass()));
 		}
 		
 		
@@ -98,5 +80,4 @@ public class Main extends ApplicationAdapter {
 	public void dispose () {
 		spriteBatch.dispose();
 	}
-	
 }

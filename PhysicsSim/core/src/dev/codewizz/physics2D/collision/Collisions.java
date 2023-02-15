@@ -9,7 +9,13 @@ public class Collisions {
 			if(b instanceof BoxCollider) {
 				return polygonAndPolygon((BoxCollider) a, (BoxCollider) b);
 			} else {
-				return circleAndPolygon((CircleCollider) b, (BoxCollider) a);
+				CollisionResult result = circleAndPolygon((CircleCollider) b, (BoxCollider) a);
+				
+				
+				Vector2 n = new Vector2(result.getNormal()).scl(-1);
+				
+				result.set(result.getDepth(), n, new Vector2());
+				return result;
 			}
 		} else {
 			if(b instanceof BoxCollider) {
@@ -23,82 +29,91 @@ public class Collisions {
 	
 	
 	public static CollisionResult circleAndPolygon(CircleCollider circle, BoxCollider box) {
-		Vector2[] vertices = box.getTransformedVertices();
-		
 		CollisionResult result = new CollisionResult();
+		
 		Vector2 normal = new Vector2();
-		float depth = 1f;
-		Vector2 axis = new Vector2();
-		float axisDepth = 0f;
-		
-		for(int i = 0; i < vertices.length; i++) {
-			Vector2 va = vertices[i];
-			Vector2 vb = vertices[(i + 1) % vertices.length];
-		
-			Vector2 edge = new Vector2(vb).sub(va);
-			axis = new Vector2(-edge.y, edge.x);
-			
-			// X: max Y: min
-			Vector2 projVerticesA = projectVertices(vertices, axis);
-			float minA = projVerticesA.y;
-			float maxA = projVerticesA.x;
-			
-			Vector2 projCircleB = projectCircle(circle, axis);
-			float minB = projCircleB.y;
-			float maxB = projCircleB.x;
-			
-			if(minA >= maxB || minB >= maxA) {
-				result.reset();
-				return result;
-			}
-			
-			axisDepth = Math.min(maxB - minA,  maxA - minB);
-			
-			if(axisDepth < depth) {
-				depth = axisDepth;
-				normal = new Vector2(axis);
-			}
-			
-			
-		}
-		
-		int cpIndex = findClosestPointOnPolygon(circle.getCenter(), vertices);
-		Vector2 cp = vertices[cpIndex];
-		axis = new Vector2(cp).sub(circle.getCenter());
-		
-		// X: max Y: min
-		Vector2 projVerticesA = projectVertices(vertices, axis);
-		float minA = projVerticesA.y;
-		float maxA = projVerticesA.x;
+        float depth = Float.MAX_VALUE;
 
-		Vector2 projCircleB = projectCircle(circle, axis);
-		float minB = projCircleB.y;
-		float maxB = projCircleB.x;
+        Vector2[] vertices = box.getTransformedVertices();
+        Vector2 polygonCenter = FindArithmeticMean(vertices);
+        
+        Vector2 axis = new Vector2();
+        float axisDepth = 0f;
+        float minA, maxA, minB, maxB;
 
-		if (minA >= maxB || minB >= maxA) {
-			result.reset();
-			return result;
-		}
+        for (int i = 0; i < vertices.length; i++)
+        {
+            Vector2 va = vertices[i];
+            Vector2 vb = vertices[(i + 1) % vertices.length];
 
-		axisDepth = Math.min(maxB - minA, maxA - minB);
+            Vector2 edge = new Vector2(vb).sub(va);
+            axis = new Vector2(-edge.y, edge.x);
+            axis = axis.nor();
 
-		if (axisDepth < depth) {
-			depth = axisDepth;
-			normal = new Vector2(axis);
-		}
-		
-		depth /= normal.len();
-		normal.nor();
-		
-		Vector2 polygonCenter = FindArithmeticMean(vertices);
-		Vector2 direction = new Vector2(polygonCenter).sub(circle.getCenter());
-		
-		if(direction.dot(normal) < 0f) {
-			normal.scl(-1);
-		}
-		
-		result.set(depth, normal, new Vector2());
-		return result;
+            Vector2 resultA = Collisions.projectVertices(vertices, axis);
+            
+            maxA = resultA.x;
+            minA = resultA.y;
+            
+            Vector2 resultB = Collisions.projectCircle(circle, axis);
+
+            maxB = resultB.x;
+            minB = resultB.y;
+            
+            if (minA >= maxB || minB >= maxA)
+            {
+            	result.reset();
+                return result;
+            }
+
+            axisDepth = Math.min(maxB - minA, maxA - minB);
+
+            if (axisDepth < depth)
+            {
+                depth = axisDepth;
+                normal = axis;
+            }
+        }
+
+        int cpIndex = Collisions.findClosestPointOnPolygon(circle, vertices);
+        Vector2 cp = vertices[cpIndex];
+
+        axis = new Vector2(cp).sub(circle.getCenter());
+        axis = axis.nor();
+
+        Vector2 resultA = Collisions.projectVertices(vertices, axis);
+        
+        maxA = resultA.x;
+        minA = resultA.y;
+        
+        Vector2 resultB = Collisions.projectCircle(circle, axis);
+
+        maxB = resultB.x;
+        minB = resultB.y;
+        
+        if (minA >= maxB || minB >= maxA)
+        {
+        	result.reset();
+            return result;
+        }
+
+        axisDepth = Math.min(maxB - minA, maxA - minB);
+
+        if (axisDepth < depth)
+        {
+            depth = axisDepth;
+            normal = axis;
+        }
+
+        Vector2 direction = new Vector2(polygonCenter).sub(circle.getCenter());
+
+        if (direction.dot(new Vector2(normal)) < 0f)
+        {
+            normal = normal.scl(-1);
+        }
+
+        result.set(depth, normal, new Vector2());
+        return result;
 	}
 	
 	public static CollisionResult circleAndCircle(CircleCollider a, CircleCollider b) {
@@ -122,13 +137,16 @@ public class Collisions {
 		return result;
 	}
 	
-	private static int findClosestPointOnPolygon(Vector2 circleCenter, Vector2[] vertices) {
+	private static int findClosestPointOnPolygon(CircleCollider circle, Vector2[] vertices) {
+
 		int result = -1;
 		float minDistance = Float.MAX_VALUE;
 		
 		for(int i = 0; i < vertices.length; i++) {
 			Vector2 v = vertices[i];
-			float distance = Vector2.dst(v.x, v.y, circleCenter.x, circleCenter.y);
+			
+			float distance = v.dst(circle.getCenter());
+			
 			if(distance < minDistance) {
 				minDistance = distance;
 				result = i;
@@ -265,7 +283,7 @@ public class Collisions {
 	
 	}
 	
-	private static Vector2 FindArithmeticMean(Vector2[] vertices)
+	public static Vector2 FindArithmeticMean(Vector2[] vertices)
     {
         float sumX = 0f;
         float sumY = 0f;
