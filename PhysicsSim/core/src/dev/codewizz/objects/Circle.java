@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 import dev.codewizz.Main;
 import dev.codewizz.physics2D.Rigidbody;
 import dev.codewizz.physics2D.collision.CircleCollider;
-import dev.codewizz.utils.Utils;
 
 public class Circle extends GameObject {
 
@@ -21,7 +20,7 @@ public class Circle extends GameObject {
 		
 		this.collider = new CircleCollider(this, radius);
 		
-		this.rigidbody = Rigidbody.createCircle(this, new Vector2(x, y), radius, 0.5f, false, 0.5f);
+		this.rigidbody = Rigidbody.createCircle(this, new Vector2(x, y), radius, 0.2f, false, 0.5f);
 		
 	}
 	

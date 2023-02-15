@@ -35,7 +35,7 @@ public class Collisions {
         float depth = Float.MAX_VALUE;
 
         Vector2[] vertices = box.getTransformedVertices();
-        Vector2 polygonCenter = FindArithmeticMean(vertices);
+        Vector2 polygonCenter = box.getCenter();
         
         Vector2 axis = new Vector2();
         float axisDepth = 0f;

@@ -48,7 +48,7 @@ public class BoxCollider extends Collider {
 	}
 	
 	public Vector2 getCenter() {
-		return Collisions.FindArithmeticMean(getTransformedVertices());
+		return object.getRigidbody().getPosition();
 	}
 
 	public Vector2[] getTransformedVertices() {

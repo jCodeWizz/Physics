@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import dev.codewizz.objects.Box;
 import dev.codewizz.objects.Circle;
+import dev.codewizz.objects.GameObject;
 import dev.codewizz.physics2D.World;
 import dev.codewizz.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -38,10 +39,26 @@ public class Main extends ApplicationAdapter {
 
 		camera.update();
 		
-		world.addObject(new Box(0, -260, 1000f, 20f, Utils.getRandomColor()));
+		float angle = 45f;
+		
+		GameObject box1 = new Box(0, -260, 1000f, 20f, Utils.getRandomColor());
+		GameObject box2 = new Box(0, -260, 1000f, 20f, Utils.getRandomColor());
+		
+		box1.getRigidbody().setRotation(angle);
+		box2.getRigidbody().setRotation(-angle);
+		
+		box1.getRigidbody().setStatic(true);
+		box2.getRigidbody().setStatic(true);
+		
+		world.addObject(box1);
+		world.addObject(box2);
 		
 		for(int i = 0; i < 50; i++) {
-			world.addObject(new Circle(Utils.RANDOM.nextInt(1000) - 500, Utils.RANDOM.nextInt(1000) - 500, Utils.RANDOM.nextInt(10) + 10f, Utils.getRandomColor()));
+			if(Utils.RANDOM.nextBoolean()) {
+				world.addObject(new Circle(Utils.RANDOM.nextInt(1000) - 500, Utils.RANDOM.nextInt(1000) - 500, Utils.RANDOM.nextInt(10) + 10f, Utils.getRandomColor()));
+			} else {
+				world.addObject(new Box(Utils.RANDOM.nextInt(1000) - 500, Utils.RANDOM.nextInt(1000) - 500, Utils.RANDOM.nextInt(10) + 10f, Utils.RANDOM.nextInt(10) + 10f, Utils.getRandomColor()));
+			}
 		}
 	}
 	

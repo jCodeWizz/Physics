@@ -24,7 +24,7 @@ public class Box extends GameObject {
 		this.color = Color.WHITE;
 		
 		this.collider = new BoxCollider(this, w, h);
-		this.rigidbody = Rigidbody.createBox(this, new Vector2(x, y), w, h, 1f, true, 5f);
+		this.rigidbody = Rigidbody.createBox(this, new Vector2(x, y), w, h, 0.5f, false, 5f);
 	}
 	
 	public Box(float x, float y, float w, float h, Color color) {
@@ -49,12 +49,6 @@ public class Box extends GameObject {
 		Main.shapeDrawer.line(pos[3], pos[0], color);
 		Main.shapeDrawer.filledCircle(((BoxCollider) collider).getCenter(), 2f, Color.BLACK);
 		
-		
-		Vector2 vec = new Vector2(pos[1]).sub(pos[0]);
-		Vector2 vec2 = vec.scl(0.5f);
-		
-		
-		Main.shapeDrawer.line(((BoxCollider) collider).getCenter(), new Vector2(((BoxCollider) collider).getCenter()).add(vec2), Color.BLACK);
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.Z)) {
 			this.rigidbody.rotate(0.05f);

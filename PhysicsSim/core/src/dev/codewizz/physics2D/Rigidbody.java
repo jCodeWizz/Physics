@@ -57,9 +57,8 @@ public class Rigidbody {
 	
 	public void update(float dt) {
 		
-		if(!isStatic) {
-			force.add(new Vector2(0, -98.1f * mass));
-		}
+		this.addForce(new Vector2(0, -98.1f * mass));
+		
 		
 		
 		Vector2 acceleration = new Vector2(force).scl(1f/mass * dt);
@@ -84,7 +83,9 @@ public class Rigidbody {
 	}
 	
 	public void addForce(Vector2 force) {
-		this.force.add(force);
+		if(!isStatic) {
+			this.force.add(force);
+		}
 	}
 	
 	public void rotate(float amount) {
@@ -197,6 +198,15 @@ public class Rigidbody {
 	}
 
 	public float getInvMass() {
+		if(isStatic) {
+			return 0.0f;
+		}
+		
+		
 		return invMass;
+	}
+
+	public void setStatic(boolean isStatic) {
+		this.isStatic = isStatic;
 	}
 }
