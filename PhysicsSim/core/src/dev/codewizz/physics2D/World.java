@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.codewizz.objects.GameObject;
 import dev.codewizz.physics2D.collision.CollisionResult;
 import dev.codewizz.physics2D.collision.Collisions;
+import dev.codewizz.utils.JMath;
 
 public class World {
 
@@ -17,6 +18,9 @@ public class World {
 
 	public static final float minDensity = 0.2f;
 	public static final float maxDensity = 21.4f;
+	
+	public static final int MIN_ITERATIONS = 1;
+	public static final int MAX_ITERATIONS = 128;
 
 	public List<GameObject> objects = new CopyOnWriteArrayList<>();
 
@@ -24,45 +28,63 @@ public class World {
 
 	}
 
-	public void update(float dt) {
-		for (int i = 0; i < objects.size() - 1; i++) {
-			Rigidbody b1 = objects.get(i).getRigidbody();
+	public void update(float dt, int iterations) {
+		iterations = (int) JMath.clamp(iterations, MIN_ITERATIONS, MAX_ITERATIONS);
+		
+		for(int it = 0; it < iterations; it++) {
+			for (GameObject object : objects) {
+				object.update(dt, iterations);
+			}
+			
+			
+			
+			
+			
+			
+			for (int i = 0; i < objects.size() - 1; i++) {
+				Rigidbody b1 = objects.get(i).getRigidbody();
 
-			for (int j = i + 1; j < objects.size(); j++) {
+				for (int j = i + 1; j < objects.size(); j++) {
 
-				Rigidbody b2 = objects.get(j).getRigidbody();
+					Rigidbody b2 = objects.get(j).getRigidbody();
 
-				if(b1.isStatic() && b2.isStatic())
-					continue;
-				
-				CollisionResult result = Collisions.testCollision(b1.getObject().getCollider(), b2.getObject().getCollider());
-				if (result.isIntersecting()) {
-					Vector2 normal = result.getNormal();
-					float depth = result.getDepth();
+					if(b1.isStatic() && b2.isStatic())
+						continue;
 					
-					if(b1.isStatic()) {
-						b2.move(new Vector2(normal).scl(depth));
-					} else if(b2.isStatic()) {
-						b1.move(new Vector2(normal).scl(-depth));
-					} else {
-						b1.move(new Vector2(normal).scl(-depth / 2f));
-						b2.move(new Vector2(normal).scl(depth / 2f));
+					CollisionResult result = Collisions.testCollision(b1.getObject().getCollider(), b2.getObject().getCollider());
+					if (result.isIntersecting()) {
+						Vector2 normal = result.getNormal();
+						float depth = result.getDepth();
+						
+						if(b1.isStatic()) {
+							b2.move(new Vector2(normal).scl(depth));
+						} else if(b2.isStatic()) {
+							b1.move(new Vector2(normal).scl(-depth));
+						} else {
+							b1.move(new Vector2(normal).scl(-depth / 2f));
+							b2.move(new Vector2(normal).scl(depth / 2f));
+						}
+						
+						
+						
+						
+						
+						
+
+						resolveCollision(b1, b2, normal, depth);
 					}
-					
-					
-					
-					
-					
-					
-
-					resolveCollision(b1, b2, normal, depth);
 				}
 			}
 		}
-
-		for (GameObject object2 : objects) {
-			object2.update(dt);
+		
+		for (GameObject object : objects) {
+			if(!object.getRigidbody().isStatic()) {
+				if(object.getRigidbody().getAABB().max.y < -230f) {
+					this.removeObject(object);
+				}
+			}
 		}
+		
 	}
 
 	public void resolveCollision(Rigidbody a, Rigidbody b, Vector2 normal, float depth) {
@@ -98,6 +120,7 @@ public class World {
 
 	public void removeObject(GameObject object) {
 		objects.remove(object);
+		object.destroy();
 	}
 
 	public GameObject getObject(int index) {

@@ -24,7 +24,7 @@ public class Box extends GameObject {
 		this.color = Color.WHITE;
 		
 		this.collider = new BoxCollider(this, w, h);
-		this.rigidbody = Rigidbody.createBox(this, new Vector2(x, y), w, h, 1f, true, 5f);
+		this.rigidbody = Rigidbody.createBox(this, new Vector2(x, y), this.w, this.h, 0.5f, false, 0.5f);
 	}
 	
 	public Box(float x, float y, float w, float h, Color color) {
@@ -33,8 +33,8 @@ public class Box extends GameObject {
 	}
 
 	@Override
-	public void update(float dt) {
-		super.update(dt);
+	public void update(float dt, int iterations) {
+		super.update(dt, iterations);
 	}
 
 	@Override
@@ -43,20 +43,22 @@ public class Box extends GameObject {
 		
 		Main.shapeDrawer.filledPolygon(getPolygon());
 		
-		Main.shapeDrawer.line(pos[0], pos[1], color);
-		Main.shapeDrawer.line(pos[1], pos[2], color);
-		Main.shapeDrawer.line(pos[2], pos[3], color);
-		Main.shapeDrawer.line(pos[3], pos[0], color);
-		Main.shapeDrawer.filledCircle(((BoxCollider) collider).getCenter(), 2f, Color.BLACK);
+		if(!this.rigidbody.isStatic()) {
+			Main.shapeDrawer.line(pos[0], pos[1], color);
+			Main.shapeDrawer.line(pos[1], pos[2], color);
+			Main.shapeDrawer.line(pos[2], pos[3], color);
+			Main.shapeDrawer.line(pos[3], pos[0], color);
+			Main.shapeDrawer.filledCircle(((BoxCollider) collider).getCenter(), 2f, Color.BLACK);
+			
+			
+			Vector2 vec = new Vector2(pos[1]).sub(pos[0]);
+			Vector2 vec2 = vec.scl(0.5f);
+			
+			
+			Main.shapeDrawer.line(((BoxCollider) collider).getCenter(), new Vector2(((BoxCollider) collider).getCenter()).add(vec2), Color.BLACK);
+		}
 		
-		
-		Vector2 vec = new Vector2(pos[1]).sub(pos[0]);
-		Vector2 vec2 = vec.scl(0.5f);
-		
-		
-		Main.shapeDrawer.line(((BoxCollider) collider).getCenter(), new Vector2(((BoxCollider) collider).getCenter()).add(vec2), Color.BLACK);
-		
-		if(Gdx.input.isKeyPressed(Input.Keys.Z)) {
+		if(Gdx.input.isKeyPressed(Input.Keys.Z) && this.rigidbody.isStatic()) {
 			this.rigidbody.rotate(0.05f);
 		}
 		
@@ -75,10 +77,6 @@ public class Box extends GameObject {
 				pos[2].x, pos[2].y,	
 				pos[3].x, pos[3].y
 		};
-		
-		
-		
-		
 		return new Polygon(v);
 	}
 }

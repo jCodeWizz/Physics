@@ -2,16 +2,16 @@ package dev.codewizz;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import dev.codewizz.objects.Box;
 import dev.codewizz.objects.Circle;
+import dev.codewizz.objects.GameObject;
 import dev.codewizz.physics2D.World;
 import dev.codewizz.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -38,11 +38,9 @@ public class Main extends ApplicationAdapter {
 
 		camera.update();
 		
-		world.addObject(new Box(0, -260, 1000f, 20f, Utils.getRandomColor()));
-		
-		for(int i = 0; i < 50; i++) {
-			world.addObject(new Circle(Utils.RANDOM.nextInt(1000) - 500, Utils.RANDOM.nextInt(1000) - 500, Utils.RANDOM.nextInt(10) + 10f, Utils.getRandomColor()));
-		}
+		GameObject box = new Box(0, -150f, 500f, 75);
+		box.getRigidbody().setStatic(true);
+		world.addObject(box);
 	}
 	
 	
@@ -53,21 +51,30 @@ public class Main extends ApplicationAdapter {
 		camera.update();
 		spriteBatch.setProjectionMatrix(camera.combined);
 
-		if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-			world.getObject(0).addForce(new Vector2(-50f * world.getObject(0).getRigidbody().getMass(), 0));
+		if(Gdx.input.isButtonJustPressed(0)) {
+			float w = Utils.RANDOM.nextInt(15) + 15;
+			float h = Utils.RANDOM.nextInt(15) + 15;
+			
+			Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+			
+			pos = camera.unproject(new Vector3(pos.x, pos.y, 0));
+			world.addObject(new Box(pos.x, pos.y, w, h, Utils.getRandomColor()));
+			
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-			world.getObject(0).addForce(new Vector2(50f * world.getObject(0).getRigidbody().getMass(), 0));
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-			world.getObject(0).addForce(new Vector2(0, 50f * world.getObject(0).getRigidbody().getMass()));
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
-			world.getObject(0).addForce(new Vector2(0, -50f * world.getObject(0).getRigidbody().getMass()));
+		
+		if(Gdx.input.isButtonJustPressed(1)) {
+			float r = Utils.RANDOM.nextInt(15) + 15;
+			r *= 0.5f;
+			
+			Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+			
+			pos = camera.unproject(new Vector3(pos.x, pos.y, 0));
+			world.addObject(new Circle(pos.x, pos.y, r, Utils.getRandomColor()));
+			
 		}
 		
 		
-		world.update(Gdx.graphics.getDeltaTime());
+		world.update(Gdx.graphics.getDeltaTime(), 8);
 		
 		spriteBatch.begin();
 		

@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector2;
 
 import dev.codewizz.physics2D.Rigidbody;
 import dev.codewizz.physics2D.collision.Collider;
-import dev.codewizz.utils.Debug;
 
 public abstract class GameObject {
 
@@ -15,8 +14,8 @@ public abstract class GameObject {
 	public GameObject(float x, float y) {
 	}
 	
-	public void update(float dt) {
-		this.rigidbody.update(dt);
+	public void update(float dt, int iterations) {
+		this.rigidbody.update(dt, iterations);
 	}
 	public abstract void render(SpriteBatch b);
 	
@@ -34,6 +33,13 @@ public abstract class GameObject {
 	
 	public void addForce(Vector2 force) {
 		this.rigidbody.addForce(force);
+	}
+	
+	public void destroy() {
+		this.rigidbody.destroy();
+		this.collider.destroy();
+		rigidbody = null;
+		collider = null;
 	}
 	
 }

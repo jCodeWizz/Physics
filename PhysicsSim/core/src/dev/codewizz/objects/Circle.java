@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 import dev.codewizz.Main;
 import dev.codewizz.physics2D.Rigidbody;
 import dev.codewizz.physics2D.collision.CircleCollider;
-import dev.codewizz.utils.Utils;
 
 public class Circle extends GameObject {
 
@@ -31,8 +30,8 @@ public class Circle extends GameObject {
 	}
 
 	@Override
-	public void update(float dt) {
-		super.update(dt);
+	public void update(float dt, int iterations) {
+		super.update(dt, iterations);
 	}
 
 	@Override

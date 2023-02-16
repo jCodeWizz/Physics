@@ -7,7 +7,6 @@ import dev.codewizz.objects.GameObject;
 public class CircleCollider extends Collider {
 
 	private float radius = 1f;
-	private GameObject object;
 	
 	public CircleCollider(GameObject object, float radius) {
 		this.object = object;
