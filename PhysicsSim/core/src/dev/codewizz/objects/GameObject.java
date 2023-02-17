@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector2;
 
 import dev.codewizz.physics2D.Rigidbody;
 import dev.codewizz.physics2D.collision.Collider;
-import dev.codewizz.utils.Debug;
 
 public abstract class GameObject {
 

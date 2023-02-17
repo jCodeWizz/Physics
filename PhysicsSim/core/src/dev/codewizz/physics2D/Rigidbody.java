@@ -189,6 +189,7 @@ public class Rigidbody {
 		float mass = area * density;
 		
 		body = new Rigidbody(object, position, density, mass, restitution, area, isStatic, ShapeType.Box);
+		body.rotation = 0.2f;
 		return body;
 	}
 	

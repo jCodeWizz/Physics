@@ -9,4 +9,8 @@ public abstract class Collider {
 	public void destroy() {
 		this.object = null;
 	}
+	
+	public GameObject getObject() {
+		return object;
+	}
 }

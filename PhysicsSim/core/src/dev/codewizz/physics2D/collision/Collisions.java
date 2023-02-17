@@ -14,7 +14,7 @@ public class Collisions {
 				
 				Vector2 n = new Vector2(result.getNormal()).scl(-1);
 				
-				result.set(result.getDepth(), n, new Vector2());
+				result.set(a.getObject(), b.getObject(), result.getDepth(), n, new Vector2());
 				return result;
 			}
 		} else {
@@ -112,7 +112,7 @@ public class Collisions {
             normal = normal.scl(-1);
         }
 
-        result.set(depth, normal, new Vector2());
+        result.set(circle.getObject(), box.getObject(), depth, normal, new Vector2());
         return result;
 	}
 	
@@ -132,7 +132,7 @@ public class Collisions {
 		Vector2 normal = new Vector2(b.getCenter()).sub(a.getCenter()).nor();
 		depth = radii - distance;
 		
-		result.set(depth, normal, new Vector2(0, 0));
+		result.set(a.getObject(), b.getObject(), depth, normal, new Vector2(0, 0));
 		
 		return result;
 	}
@@ -278,7 +278,7 @@ public class Collisions {
             normal = normal.scl(-1);
         }
 
-        result.set(depth, normal, new Vector2());
+        result.set(a.getObject(), b.getObject(), depth, normal, new Vector2());
         return result;
 	
 	}

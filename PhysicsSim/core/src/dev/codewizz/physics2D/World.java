@@ -19,6 +19,7 @@ public class World {
 	public static final float maxDensity = 21.4f;
 
 	public List<GameObject> objects = new CopyOnWriteArrayList<>();
+	public List<CollisionResult> results = new CopyOnWriteArrayList<>();
 
 	public World() {
 
@@ -54,10 +55,18 @@ public class World {
 							b1.move(new Vector2(normal).scl(-depth / 2f));
 							b2.move(new Vector2(normal).scl(depth / 2f));
 						}
-						resolveCollision(b1, b2, normal, depth);
+						results.add(result);
 					}
 				}
 			}
+			
+			for(CollisionResult result : results) {
+				resolveCollision(result.getBodyA().getRigidbody(), result.getBodyB().getRigidbody(), result.getNormal(), result.getDepth());
+			}
+			results.clear();
+			
+			//givemehead no.
+			
 		}
 		
 		for (GameObject object : objects) {
@@ -65,6 +74,7 @@ public class World {
 				this.removeObject(object);
 			}
 		}
+		
 	}
 
 	public void resolveCollision(Rigidbody a, Rigidbody b, Vector2 normal, float depth) {
