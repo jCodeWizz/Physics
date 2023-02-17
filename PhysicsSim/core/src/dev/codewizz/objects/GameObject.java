@@ -15,8 +15,16 @@ public abstract class GameObject {
 	public GameObject(float x, float y) {
 	}
 	
-	public void update(float dt) {
-		this.rigidbody.update(dt);
+	public void destroy() {
+		rigidbody.destroy();
+		collider.destroy();
+		
+		rigidbody = null;
+		collider = null;
+	}
+	
+	public void update(float dt, int iterations) {
+		this.rigidbody.update(dt, iterations);
 	}
 	public abstract void render(SpriteBatch b);
 	

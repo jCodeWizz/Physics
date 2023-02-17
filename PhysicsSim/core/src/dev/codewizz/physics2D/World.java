@@ -24,44 +24,46 @@ public class World {
 
 	}
 
-	public void update(float dt) {
-		for (int i = 0; i < objects.size() - 1; i++) {
-			Rigidbody b1 = objects.get(i).getRigidbody();
+	public void update(float dt, int iterations) {
+		for(int it = 0; it < iterations; it++) {
+			
+			for (GameObject object : objects) {
+				object.update(dt, iterations);
+			}
+			
+			for (int i = 0; i < objects.size() - 1; i++) {
+				Rigidbody b1 = objects.get(i).getRigidbody();
 
-			for (int j = i + 1; j < objects.size(); j++) {
+				for (int j = i + 1; j < objects.size(); j++) {
 
-				Rigidbody b2 = objects.get(j).getRigidbody();
+					Rigidbody b2 = objects.get(j).getRigidbody();
 
-				if(b1.isStatic() && b2.isStatic())
-					continue;
-				
-				CollisionResult result = Collisions.testCollision(b1.getObject().getCollider(), b2.getObject().getCollider());
-				if (result.isIntersecting()) {
-					Vector2 normal = result.getNormal();
-					float depth = result.getDepth();
+					if(b1.isStatic() && b2.isStatic())
+						continue;
 					
-					if(b1.isStatic()) {
-						b2.move(new Vector2(normal).scl(depth));
-					} else if(b2.isStatic()) {
-						b1.move(new Vector2(normal).scl(-depth));
-					} else {
-						b1.move(new Vector2(normal).scl(-depth / 2f));
-						b2.move(new Vector2(normal).scl(depth / 2f));
+					CollisionResult result = Collisions.testCollision(b1.getObject().getCollider(), b2.getObject().getCollider());
+					if (result.isIntersecting()) {
+						Vector2 normal = result.getNormal();
+						float depth = result.getDepth();
+						
+						if(b1.isStatic()) {
+							b2.move(new Vector2(normal).scl(depth));
+						} else if(b2.isStatic()) {
+							b1.move(new Vector2(normal).scl(-depth));
+						} else {
+							b1.move(new Vector2(normal).scl(-depth / 2f));
+							b2.move(new Vector2(normal).scl(depth / 2f));
+						}
+						resolveCollision(b1, b2, normal, depth);
 					}
-					
-					
-					
-					
-					
-					
-
-					resolveCollision(b1, b2, normal, depth);
 				}
 			}
 		}
-
-		for (GameObject object2 : objects) {
-			object2.update(dt);
+		
+		for (GameObject object : objects) {
+			if(object.getRigidbody().getAABB().maxY < -200f && !object.getRigidbody().isStatic()) {
+				this.removeObject(object);
+			}
 		}
 	}
 
@@ -98,6 +100,7 @@ public class World {
 
 	public void removeObject(GameObject object) {
 		objects.remove(object);
+		object.destroy();
 	}
 
 	public GameObject getObject(int index) {

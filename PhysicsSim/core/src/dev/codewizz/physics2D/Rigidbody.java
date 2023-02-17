@@ -3,6 +3,9 @@ package dev.codewizz.physics2D;
 import com.badlogic.gdx.math.Vector2;
 
 import dev.codewizz.objects.GameObject;
+import dev.codewizz.physics2D.collision.AABB;
+import dev.codewizz.physics2D.collision.BoxCollider;
+import dev.codewizz.physics2D.collision.CircleCollider;
 import dev.codewizz.utils.Debug;
 import dev.codewizz.utils.JMath;
 
@@ -26,6 +29,9 @@ public class Rigidbody {
 
 	private ShapeType shapeType;
 	public boolean transformRequired;
+	public boolean aabbRequired;
+	
+	public AABB aabb;
 	
 	private Rigidbody(GameObject object, Vector2 position, float density, float mass, float restitution, float area, boolean isStatic, ShapeType shapeType) {
 		this.object = object;
@@ -53,11 +59,19 @@ public class Rigidbody {
 		
 		
 		this.transformRequired = true;
+		this.aabbRequired = true;
 	}
 	
-	public void update(float dt) {
+	public void update(float dt, int iterations) {
+		
+		if(isStatic)
+			return;
+		
+		
+		dt /= iterations;
 		
 		this.addForce(new Vector2(0, -98.1f * mass));
+		this.addForce(new Vector2(-0.5f * linearVelocity.x * area, -0.5f * linearVelocity.y * area));
 		
 		
 		
@@ -75,11 +89,13 @@ public class Rigidbody {
 	public void move(Vector2 amount) {
 		this.position.add(amount);
 		this.transformRequired = true;
+		this.aabbRequired = true;
 	}
 	
 	public void moveTo(Vector2 pos) {
 		this.position.set(pos);
 		this.transformRequired = true;
+		this.aabbRequired = true;
 	}
 	
 	public void addForce(Vector2 force) {
@@ -94,6 +110,7 @@ public class Rigidbody {
 			this.rotation -= 360;
 		}
 		this.transformRequired = true;
+		this.aabbRequired = true;
 	}
 	
 	public void setRotation(float amount) {
@@ -102,6 +119,40 @@ public class Rigidbody {
 			this.rotation -= 360;
 		}
 		this.transformRequired = true;
+		this.aabbRequired = true;
+	}
+	
+	public AABB getAABB() {
+		if(this.aabbRequired) {
+			float minX = Float.MAX_VALUE, maxX = -Float.MAX_VALUE, minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
+			
+			if(this.shapeType == ShapeType.Box) {
+				Vector2[] vertices = ((BoxCollider) this.object.getCollider()).getTransformedVertices();
+				
+				for(int i = 0; i < vertices.length; i++) {
+					Vector2 v = vertices[i];
+					
+					if(v.x > maxX) maxX = v.x;
+					if(v.x < minX) minX = v.x;
+					if(v.y > maxY) maxY = v.y;
+					if(v.y < minY) minY = v.y;
+					
+				}
+			} else if(this.shapeType == ShapeType.Circle) {
+				float radius = ((CircleCollider) this.object.getCollider()).getRadius();
+				
+				minX = this.getPosition().x - radius;
+				minY = this.getPosition().y - radius;
+				maxX = this.getPosition().x + radius;
+				maxY = this.getPosition().y + radius;
+				
+				
+			}
+			
+			this.aabb = new AABB(minX, minY, maxX, maxY);
+		}
+		
+		return aabb;
 	}
 	
 	public static Rigidbody createCircle(GameObject object, Vector2 position, float radius, float density, boolean isStatic, float restitution) {
@@ -201,9 +252,11 @@ public class Rigidbody {
 		if(isStatic) {
 			return 0.0f;
 		}
-		
-		
 		return invMass;
+	}
+	
+	public void destroy() {
+		this.object = null;
 	}
 
 	public void setStatic(boolean isStatic) {

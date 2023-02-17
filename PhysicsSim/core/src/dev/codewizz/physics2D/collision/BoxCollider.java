@@ -8,7 +8,6 @@ import dev.codewizz.utils.Utils;
 public class BoxCollider extends Collider {
 
 	private float w, h;
-	private GameObject object;
 
 	private Vector2[] vertices;
 	private int[] triangles;
