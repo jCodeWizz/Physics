@@ -28,14 +28,11 @@ public class CollisionResult {
 		normal = new Vector2();
 	}
 	
-	public void set(GameObject objectA, GameObject objectB, float depth, Vector2 normal, Vector2... points) {
+	public void set(GameObject objectA, GameObject objectB, float depth, Vector2 normal, List<Vector2> points) {
 		intersecting = true;
 		this.depth = depth;
 		this.normal = normal;
-		for(int i = 0; i < points.length; i++) {
-			contactPoints.add(points[i]);
-		}
-		
+		this.contactPoints = points;
 		this.bodyA = objectA;
 		this.bodyB = objectB;
 	}

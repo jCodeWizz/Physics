@@ -57,7 +57,7 @@ public class BoxCollider extends Collider {
 				Vector2 v = this.vertices[i];
 				
 				Vector2 newVec = new Vector2(v).add(this.object.getRigidbody().getPosition());
-				Vector2 origin = Collisions.FindArithmeticMean(vertices).add(this.object.getRigidbody().getPosition());
+				Vector2 origin = this.object.getRigidbody().getPosition();
 				
 				this.transformedVertices[i] = Utils.rotate(newVec, this.object.getRigidbody().getRotation(), origin);
 			}

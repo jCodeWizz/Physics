@@ -1,5 +1,8 @@
 package dev.codewizz.physics2D.collision;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.math.Vector2;
 
 public class Collisions {
@@ -10,11 +13,8 @@ public class Collisions {
 				return polygonAndPolygon((BoxCollider) a, (BoxCollider) b);
 			} else {
 				CollisionResult result = circleAndPolygon((CircleCollider) b, (BoxCollider) a);
-				
-				
 				Vector2 n = new Vector2(result.getNormal()).scl(-1);
-				
-				result.set(a.getObject(), b.getObject(), result.getDepth(), n, new Vector2());
+				result.set(a.getObject(), b.getObject(), result.getDepth(), n, result.getContactPoints());
 				return result;
 			}
 		} else {
@@ -26,6 +26,111 @@ public class Collisions {
 		}
 	}
 	
+	public static List<Vector2> findContactPoints(BoxCollider boxA, BoxCollider boxB) {
+		ArrayList<Vector2> list = new ArrayList<>();
+		
+		Vector2[] verticesA = boxA.getTransformedVertices();
+		Vector2[] verticesB = boxB.getTransformedVertices();
+		
+		for(int i = 0; i < verticesA.length; i++) {
+			
+			Vector2 p = verticesA[i];
+			
+			for(int j = 0; j < verticesB.length; j++) {
+				Vector2 a = verticesB[j];
+				Vector2 b = verticesB[(j+1) % verticesB.length];
+				
+				Vector2 ab = new Vector2(b).sub(a);
+				Vector2 ap = new Vector2(p).sub(a);
+				
+				float proj = ap.dot(ab);
+				float abLenSq = ab.len2();
+				float d = proj / abLenSq;
+				
+				if(d <= 0f) { 
+					point = new Vector2(a); 
+				} else if(d >= 1f) {
+					point = new Vector2(b); 
+				 }else {
+					 point = new Vector2(ab).scl(d);
+					 point.add(a);
+				 }
+				
+				float distanceSquared = p.dst2(point);
+				
+				if(distanceSquared < minDistSq) {
+					minDistSq = distanceSquared;
+					cp = new Vector2(point);
+				}
+				
+			}
+		}
+		
+		
+		
+		
+		
+		
+		
+		return list;
+	}
+	
+	public static List<Vector2> findContactPoints(CircleCollider circleA, BoxCollider boxB) {
+		ArrayList<Vector2> list = new ArrayList<>();
+
+		float minDistSq = Float.MAX_VALUE;
+		Vector2[] vertices = boxB.getTransformedVertices();
+		Vector2 cp = new Vector2();
+		
+		for(int i = 0; i < vertices.length; i++) {
+			Vector2 point = new Vector2();
+			
+			Vector2 p = new Vector2(circleA.getCenter());
+			Vector2 a = vertices[i];
+			Vector2 b = vertices[(i + 1) % vertices.length];
+			
+			Vector2 ab = new Vector2(b).sub(a);
+			Vector2 ap = new Vector2(p).sub(a);
+			
+			float proj = ap.dot(ab);
+			float abLenSq = ab.len2();
+			float d = proj / abLenSq;
+			
+			if(d <= 0f) { 
+				point = new Vector2(a); 
+			} else if(d >= 1f) {
+				point = new Vector2(b); 
+			 }else {
+				 point = new Vector2(ab).scl(d);
+				 point.add(a);
+			 }
+			
+			float distanceSquared = p.dst2(point);
+			
+			if(distanceSquared < minDistSq) {
+				minDistSq = distanceSquared;
+				cp = new Vector2(point);
+			}
+		}
+		list.add(cp);
+		
+		return list;
+	}
+	
+	public static boolean AABBAndAABB(AABB a, AABB b) {
+		return !(a.maxX <= b.minX || b.maxX <= a.minX || a.maxY <= b.minY || b.maxY <= a.minY);
+	}
+	
+	public static List<Vector2> findContactPoints(CircleCollider a, CircleCollider b) {
+		Vector2 ab = new Vector2(b.getCenter()).sub(a.getCenter());
+		Vector2 dir = ab.nor();
+		dir.scl(a.getRadius());
+		Vector2 cp = new Vector2(a.getCenter()).add(dir);
+		
+		ArrayList<Vector2> list = new ArrayList<>();
+		list.add(cp);
+		return list;
+	}
 	
 	
 	public static CollisionResult circleAndPolygon(CircleCollider circle, BoxCollider box) {
@@ -111,8 +216,12 @@ public class Collisions {
         {
             normal = normal.scl(-1);
         }
-
-        result.set(circle.getObject(), box.getObject(), depth, normal, new Vector2());
+        
+        
+        
+        List<Vector2> list = findContactPoints(circle, box);
+        
+        result.set(circle.getObject(), box.getObject(), depth, normal, list);
         return result;
 	}
 	
@@ -131,8 +240,7 @@ public class Collisions {
 		
 		Vector2 normal = new Vector2(b.getCenter()).sub(a.getCenter()).nor();
 		depth = radii - distance;
-		
-		result.set(a.getObject(), b.getObject(), depth, normal, new Vector2(0, 0));
+		result.set(a.getObject(), b.getObject(), depth, normal, findContactPoints(a, b));
 		
 		return result;
 	}
@@ -278,7 +386,7 @@ public class Collisions {
             normal = normal.scl(-1);
         }
 
-        result.set(a.getObject(), b.getObject(), depth, normal, new Vector2());
+        result.set(a.getObject(), b.getObject(), depth, normal, null);
         return result;
 	
 	}
