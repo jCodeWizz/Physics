@@ -24,6 +24,6 @@ public class JMath {
 	}
 	
 	public static boolean nearlyEqual(Vector2 a, Vector2 b) {
-		return nearlyEqual(a.x, b.x) && nearlyEqual(a.y, b.y);
+		return a.dst2(b) < EPSILON * EPSILON;
 	}
 }

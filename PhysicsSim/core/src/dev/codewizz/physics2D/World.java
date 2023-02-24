@@ -55,17 +55,7 @@ public class World {
 					CollisionResult result = Collisions.testCollision(b1.getObject().getCollider(), b2.getObject().getCollider());
 					
 					if (result.isIntersecting()) {
-						Vector2 normal = result.getNormal();
-						float depth = result.getDepth();
-
-						if (b1.isStatic()) {
-							b2.move(new Vector2(normal).scl(depth));
-						} else if (b2.isStatic()) {
-							b1.move(new Vector2(normal).scl(-depth));
-						} else {
-							b1.move(new Vector2(normal).scl(-depth / 2f));
-							b2.move(new Vector2(normal).scl(depth / 2f));
-						}
+						seperateBodies(b1, b2, result);
 						
 						results.add(result);
 						if (result.getContactPoints() != null) {
@@ -87,6 +77,28 @@ public class World {
 			if (object.getRigidbody().getAABB().maxY < -200f && !object.getRigidbody().isStatic()) {
 				this.removeObject(object);
 			}
+		}
+	}
+	
+	private void broadPhase() {
+		
+	}
+	
+	private void narrowPhase() {
+		
+	}
+	
+	private void seperateBodies(Rigidbody b1, Rigidbody b2, CollisionResult result) {
+		Vector2 normal = result.getNormal();
+		float depth = result.getDepth();
+
+		if (b1.isStatic()) {
+			b2.move(new Vector2(normal).scl(depth));
+		} else if (b2.isStatic()) {
+			b1.move(new Vector2(normal).scl(-depth));
+		} else {
+			b1.move(new Vector2(normal).scl(-depth / 2f));
+			b2.move(new Vector2(normal).scl(depth / 2f));
 		}
 	}
 

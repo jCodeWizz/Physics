@@ -20,9 +20,11 @@ public class Rigidbody {
 	private float mass;
 	private float density;
 	private float restitution;
-	private float rotation;
-	private float rotationalVelocity;
+	private float angle;
+	private float angularVelocity;
 	private float area;
+	private float inertia;
+	private float invInertia;
 	
 	private boolean isStatic;
 	private float invMass;
@@ -34,6 +36,7 @@ public class Rigidbody {
 	public AABB aabb;
 	
 	private Rigidbody(GameObject object, Vector2 position, float density, float mass, float restitution, float area, boolean isStatic, ShapeType shapeType) {
+		this.shapeType = shapeType;
 		this.object = object;
 		this.position = position;
 		this.linearVelocity = new Vector2();
@@ -41,21 +44,25 @@ public class Rigidbody {
 		this.isStatic = isStatic;
 		
 		
-		this.rotation = 0f;
-		this.rotationalVelocity = 0f;
+		this.angle = 0f;
+		this.angularVelocity = 0f;
 		
 		this.density = density;
 		this.mass = mass;
 		this.restitution = restitution;
 		this.area = area;
 		
+		this.inertia = this.calculateRotationalInertia();
+		
 		if(!this.isStatic) {
 			this.invMass = 1f / this.mass;
+			this.invInertia = 1f / this.inertia;
 		} else {
 			this.invMass = 0.0f;
+			this.invInertia = 0.0f;
 		}
 		
-		this.shapeType = shapeType;
+		
 		
 		
 		this.transformRequired = true;
@@ -79,11 +86,25 @@ public class Rigidbody {
 		this.linearVelocity.add(new Vector2(acceleration));
 		this.move(new Vector2(linearVelocity).scl(dt));
 		
-		this.rotation += this.rotationalVelocity * dt;
+		this.angle += this.angularVelocity * dt;
 		
 		this.force = new Vector2();
 		
 		
+	}
+	
+	private float calculateRotationalInertia() {
+		if(shapeType == ShapeType.Circle) {
+			float r = ((CircleCollider) this.object.getCollider()).getRadius();
+			return (1f / 2f) * this.mass * r * r;
+		} else if (shapeType == ShapeType.Box){
+			float w = ((BoxCollider) this.object.getCollider()).getWidth();
+			float h = ((BoxCollider) this.object.getCollider()).getHeight();
+			return (1f / 12f) * this.mass * (w * w + h * h);
+		} else {
+			Debug.error("WRONG TYPE: " + shapeType.toString());
+			return 0;
+		}
 	}
 	
 	public void move(Vector2 amount) {
@@ -105,18 +126,18 @@ public class Rigidbody {
 	}
 	
 	public void rotate(float amount) {
-		this.rotation += amount;
-		if(this.rotation > 360) {
-			this.rotation -= 360;
+		this.angle += amount;
+		if(this.angle > 360) {
+			this.angle -= 360;
 		}
 		this.transformRequired = true;
 		this.aabbRequired = true;
 	}
 	
 	public void setRotation(float amount) {
-		this.rotation = amount;
-		if(this.rotation > 360) {
-			this.rotation -= 360;
+		this.angle = amount;
+		if(this.angle > 360) {
+			this.angle -= 360;
 		}
 		this.transformRequired = true;
 		this.aabbRequired = true;
@@ -200,8 +221,8 @@ public class Rigidbody {
 		return this.position;
 	}
 	
-	public float getRotation() {
-		return this.rotation;
+	public float getAngle() {
+		return this.angle;
 	}
 	
 	public ShapeType getType() {
@@ -228,8 +249,8 @@ public class Rigidbody {
 		return restitution;
 	}
 
-	public float getRotationalVelocity() {
-		return rotationalVelocity;
+	public float getAngularVelocity() {
+		return angularVelocity;
 	}
 
 	public float getArea() {
@@ -261,5 +282,13 @@ public class Rigidbody {
 
 	public void setStatic(boolean isStatic) {
 		this.isStatic = isStatic;
+	}
+
+	public float getInertia() {
+		return inertia;
+	}
+
+	public float getInvInertia() {
+		return invInertia;
 	}
 }

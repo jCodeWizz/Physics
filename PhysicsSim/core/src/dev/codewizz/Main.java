@@ -51,16 +51,22 @@ public class Main extends ApplicationAdapter {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 		camera = new OrthographicCamera(1000, 1000 * (h / w));
-
-		//uiBatch.setProjectionMatrix(camera.combined);
-		
 		camera.update();
 
 		GameObject box1 = new Box(0, -150, 600f, 50f, Utils.getRandomColor());
-
 		box1.getRigidbody().setStatic(true);
 		
+		GameObject box2 = new Box(-200, 50, 300f, 50f, Utils.getRandomColor());
+		box2.getRigidbody().setRotation(-0.2f);
+		box2.getRigidbody().setStatic(true);
+		
+		GameObject box3 = new Box(50, 150, 300f, 50f, Utils.getRandomColor());
+		box3.getRigidbody().setRotation(0.2f);
+		box3.getRigidbody().setStatic(true);
+		
 		world.addObject(box1);
+		world.addObject(box2);
+		world.addObject(box3);
 
 	}
 
