@@ -77,14 +77,14 @@ public class Main extends ApplicationAdapter {
 		camera.update();
 		spriteBatch.setProjectionMatrix(camera.combined);
 
-		if (Gdx.input.isButtonPressed(0)) {
+		if (Gdx.input.isButtonJustPressed(0)) {
 			Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 			Vector3 pos = camera.unproject(mousePos);
 			float w = Utils.RANDOM.nextInt(20) + 15;
 			Box box = new Box(pos.x, pos.y, w, w);
 			world.addObject(box);
 		}
-		if (Gdx.input.isButtonPressed(1)) {
+		if (Gdx.input.isButtonJustPressed(1)) {
 			Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 			Vector3 pos = camera.unproject(mousePos);
 			float w = Utils.RANDOM.nextInt(20) + 15;

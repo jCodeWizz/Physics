@@ -14,6 +14,9 @@ public class BoxCollider extends Collider {
 	private Vector2[] transformedVertices;
 
 	public BoxCollider(GameObject object, float w, float h) {
+		this.w = w;
+		this.h = h;
+		
 		this.object = object;
 		vertices = createBoxVertices(w, h);
 		triangles = createBoxTriangles();

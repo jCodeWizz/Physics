@@ -1,5 +1,6 @@
 package dev.codewizz.physics2D;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -52,11 +53,12 @@ public class World {
 					if (!Collisions.AABBAndAABB(aabb1, aabb2))
 						continue;
 
-					CollisionResult result = Collisions.testCollision(b1.getObject().getCollider(), b2.getObject().getCollider());
-					
+					CollisionResult result = Collisions.testCollision(b1.getObject().getCollider(),
+							b2.getObject().getCollider());
+
 					if (result.isIntersecting()) {
 						seperateBodies(b1, b2, result);
-						
+
 						results.add(result);
 						if (result.getContactPoints() != null) {
 							points.addAll(result.getContactPoints());
@@ -66,8 +68,7 @@ public class World {
 			}
 
 			for (CollisionResult result : results) {
-				resolveCollision(result.getBodyA().getRigidbody(), result.getBodyB().getRigidbody(), result.getNormal(),
-						result.getDepth());
+				resolveCollisionWithRotation(result);
 			}
 			results.clear();
 
@@ -79,15 +80,15 @@ public class World {
 			}
 		}
 	}
-	
+
 	private void broadPhase() {
-		
+
 	}
-	
+
 	private void narrowPhase() {
-		
+
 	}
-	
+
 	private void seperateBodies(Rigidbody b1, Rigidbody b2, CollisionResult result) {
 		Vector2 normal = result.getNormal();
 		float depth = result.getDepth();
@@ -102,7 +103,11 @@ public class World {
 		}
 	}
 
-	public void resolveCollision(Rigidbody a, Rigidbody b, Vector2 normal, float depth) {
+	public void resolveCollisionBasic(CollisionResult result) {
+
+		Vector2 normal = new Vector2(result.getNormal());
+		Rigidbody a = result.getBodyA().getRigidbody();
+		Rigidbody b = result.getBodyB().getRigidbody();
 
 		Vector2 relativeVelocity = new Vector2(b.getLinearVelocity()).sub(a.getLinearVelocity());
 
@@ -119,6 +124,80 @@ public class World {
 
 		a.getLinearVelocity().sub(new Vector2(impulse).scl(a.getInvMass()));
 		b.getLinearVelocity().add(new Vector2(impulse).scl(b.getInvMass()));
+	}
+
+	// THE FUCKING PROBLEM IS HERE DAMMIT
+	public void resolveCollisionWithRotation(CollisionResult result) {
+		
+		
+		
+		Rigidbody bodyA = result.getBodyA().getRigidbody();
+		Rigidbody bodyB = result.getBodyB().getRigidbody();
+		Vector2 normal = new Vector2(result.getNormal());
+		List<Vector2> points = result.getContactPoints();
+		List<Vector2> impulseList = new ArrayList<Vector2>();
+		List<Vector2> raList = new ArrayList<Vector2>();
+		List<Vector2> rbList = new ArrayList<Vector2>();
+		
+		
+		float e = Math.min(bodyA.getRestitution(), bodyB.getRestitution());
+		for (int i = 0; i < points.size(); i++) {
+			Vector2 ra = new Vector2(points.get(i)).sub(bodyA.getPosition());
+			Vector2 rb = new Vector2(points.get(i)).sub(bodyB.getPosition());
+
+			raList.add(new Vector2(ra));
+			rbList.add(new Vector2(rb));
+
+			Vector2 raPerp = new Vector2(-ra.y, ra.x);
+			Vector2 rbPerp = new Vector2(-rb.y, rb.x);
+
+			Vector2 angularLinearVelocityA = new Vector2(raPerp).scl(bodyA.getAngularVelocity());
+			Vector2 angularLinearVelocityB = new Vector2(rbPerp).scl(bodyB.getAngularVelocity());
+
+			
+			Vector2 vectorA = new Vector2(bodyA.getLinearVelocity()).add(angularLinearVelocityA);
+			Vector2 vectorB = new Vector2(bodyB.getLinearVelocity()).add(angularLinearVelocityB);
+			
+			
+			
+			
+			
+			Vector2 relativeVelocity = new Vector2(vectorB).sub(vectorA);
+
+			float contactVelocityMag = relativeVelocity.dot(normal);
+			
+			if (contactVelocityMag > 0f) {
+				continue;
+			}
+
+			float raPerpDotN = raPerp.dot(normal);
+			float rbPerpDotN = rbPerp.dot(normal);
+
+			float denom = bodyA.getInvMass() + bodyB.getInvMass() + (raPerpDotN * raPerpDotN) * bodyA.getInvInertia()
+					+ (rbPerpDotN * rbPerpDotN) * bodyB.getInvInertia();
+
+			
+			float j = -(1f + e) * contactVelocityMag;
+			j /= denom;
+			j /= (float) points.size();
+			
+			Vector2 impulse = normal.scl(j);
+			impulseList.add(impulse);
+		}
+		
+		for (int i = 0; i < impulseList.size(); i++) {
+			Vector2 impulse = impulseList.get(i);
+
+			Vector2 ra = raList.get(i);
+			Vector2 rb = rbList.get(i);
+			
+			bodyA.getLinearVelocity().sub(new Vector2(impulse).scl(bodyA.getInvMass()));
+			bodyA.setAngularVelocity(bodyA.getAngularVelocity() + -impulse.crs(ra) * bodyA.getInvInertia());
+			bodyB.getLinearVelocity().add(new Vector2(impulse).scl(bodyB.getInvMass()));
+			bodyB.setAngularVelocity(bodyB.getAngularVelocity() + impulse.crs(rb) * bodyB.getInvInertia());
+
+		}
+		
 	}
 
 	public void render(SpriteBatch b) {

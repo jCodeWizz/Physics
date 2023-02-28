@@ -289,6 +289,13 @@ public class Rigidbody {
 	}
 
 	public float getInvInertia() {
+		if(isStatic) {
+			return 0.0f;
+		}
 		return invInertia;
+	}
+
+	public void setAngularVelocity(float angularVelocity) {
+		this.angularVelocity = angularVelocity;
 	}
 }
