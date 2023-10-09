@@ -2,6 +2,7 @@ package dev.codewizz;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -37,6 +38,7 @@ public class Main extends ApplicationAdapter {
 	private long longestPhysics = 0L;
 	private long longestTotal = 0L;
 	
+	GameObject box1;
 	
 	@Override
 	public void create() {
@@ -53,7 +55,7 @@ public class Main extends ApplicationAdapter {
 		camera = new OrthographicCamera(1000, 1000 * (h / w));
 		camera.update();
 
-		GameObject box1 = new Box(0, -150, 600f, 50f, Utils.getRandomColor());
+		box1 = new Box(0, -150, 600f, 50f, Utils.getRandomColor());
 		box1.getRigidbody().setStatic(true);
 		
 		GameObject box2 = new Box(-200, 50, 300f, 50f, Utils.getRandomColor());
@@ -77,19 +79,23 @@ public class Main extends ApplicationAdapter {
 		camera.update();
 		spriteBatch.setProjectionMatrix(camera.combined);
 
-		if (Gdx.input.isButtonJustPressed(0)) {
+		if (Gdx.input.isButtonPressed(0)) {
 			Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 			Vector3 pos = camera.unproject(mousePos);
 			float w = Utils.RANDOM.nextInt(20) + 15;
 			Box box = new Box(pos.x, pos.y, w, w);
 			world.addObject(box);
 		}
-		if (Gdx.input.isButtonJustPressed(1)) {
+		if (Gdx.input.isButtonPressed(1)) {
 			Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 			Vector3 pos = camera.unproject(mousePos);
 			float w = Utils.RANDOM.nextInt(20) + 15;
 			Circle circle = new Circle(pos.x, pos.y, w / 2f, Utils.getRandomColor());
 			world.addObject(circle);
+		}
+		
+		if (Gdx.input.isKeyPressed(Input.Keys.R)) {
+			box1.getRigidbody().rotate(0.1f);
 		}
 
 		physicsWatch.start();

@@ -68,7 +68,7 @@ public class World {
 			}
 
 			for (CollisionResult result : results) {
-				resolveCollisionWithRotation(result);
+				resolveCollisionBasic(result);
 			}
 			results.clear();
 
